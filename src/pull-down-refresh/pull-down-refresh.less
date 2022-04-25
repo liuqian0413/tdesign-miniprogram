@@ -1,7 +1,7 @@
 @import '../common/style/index.less';
 
 .@{prefix}-pull-down-refresh {
-  &__bar {
+  &__track {
     overflow: hidden;
     position: relative;
     background: #f6f6f6;
@@ -9,11 +9,7 @@
     font-size: 24rpx;
 
     &--refreshing {
-      transition: height .5s;
-
-      .@{prefix}-pull-down-refresh__loading {
-        animation: rotateLoading .5s linear infinite;
-      }
+      transition: height 0.5s;
     }
 
     &--success {
@@ -31,7 +27,7 @@
     }
   }
 
-  &__content {
+  &__tips {
     margin-top: 55rpx;
     display: flex;
     justify-content: center;
@@ -52,15 +48,5 @@
 
   &__wrap {
     position: relative;
-  }
-}
-
-@keyframes rotateLoading {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
   }
 }

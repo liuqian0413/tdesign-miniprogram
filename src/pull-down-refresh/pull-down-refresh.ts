@@ -1,5 +1,3 @@
-/* eslint-disable dot-notation */
-/* eslint-disable prefer-destructuring */
 import { SuperComponent, wxComponent } from '../common/src/index';
 import config from '../common/config';
 import props from './props';
@@ -19,7 +17,7 @@ export default class PullDownRefresh extends SuperComponent {
 
   defaultBarHeight = 0; // 下拉效果的默认高度
 
-  maxBarHeight = 276; // 最大下拉高度，单位 rpx
+  maxBarHeight: string | number = 276; // 最大下拉高度，单位 rpx
 
   // 触发刷新的下拉高度，单位rpx
   // 松开时下拉高度大于这个值即会触发刷新，触发刷新后松开，会恢复到这个高度并保持，直到刷新结束
@@ -39,7 +37,7 @@ export default class PullDownRefresh extends SuperComponent {
   /** 关闭动画耗时setTimeout句柄 */
   closingAnimateTimeFlag = 0;
 
-  externalClasses = ['t--class', 't-class-loading', 't-class-tex', 't-class-indicator'];
+  externalClasses = [`${prefix}-class`, `${prefix}-class-loading`, `${prefix}-class-tex`, `${prefix}-class-indicator`];
 
   options = {
     multipleSlots: true,
@@ -48,6 +46,7 @@ export default class PullDownRefresh extends SuperComponent {
   properties = props;
 
   data = {
+    prefix,
     classPrefix: name,
     barHeight: this.defaultBarHeight,
     refreshStatus: 0, // 0-未开始，1释放可刷新，2-刷新中，3-刷新成功，4-结束中
@@ -55,32 +54,35 @@ export default class PullDownRefresh extends SuperComponent {
     rotate: 0, // 旋转角度，refreshStatus为0、1时根据下拉距离动态计算得出
   };
 
-  attached() {
-    const systemInfo = wx.getSystemInfoSync();
-    // 计算像素比
-    this.screenWidth = systemInfo.screenWidth;
-    this.pixelRatio = 750 / systemInfo.screenWidth;
-    // 判断是否ios
-    this.ios = !!(systemInfo.system.toLowerCase().search('ios') + 1);
+  lifetimes = {
+    attached() {
+      const systemInfo = wx.getSystemInfoSync();
+      // 计算像素比
+      this.screenWidth = systemInfo.screenWidth;
+      this.pixelRatio = 750 / systemInfo.screenWidth;
+      // 判断是否ios
+      this.ios = !!(systemInfo.system.toLowerCase().search('ios') + 1);
 
-    // 自定义拉下宽度
-    const maxBarHeight = this.properties.maxBarHeight as any as number;
-    if (maxBarHeight) {
-      this.maxBarHeight = maxBarHeight;
-    }
-    const loadingBarHeight = this.properties.loadingBarHeight as any as number;
-    if (loadingBarHeight) {
-      this.loadingBarHeight = loadingBarHeight;
-    }
-    const refreshTimeout = this.properties.refreshTimeout as any as number;
-    if (refreshTimeout) {
-      this.refreshTimeout = refreshTimeout;
-    }
-  }
+      // 自定义拉下宽度
+      const { maxBarHeight, loadingBarHeight, refreshTimeout } = this.properties;
 
-  detached() {
-    this.cleanTimeFlag();
-  }
+      if (maxBarHeight) {
+        this.maxBarHeight = maxBarHeight;
+      }
+
+      if (loadingBarHeight) {
+        this.loadingBarHeight = loadingBarHeight;
+      }
+
+      if (refreshTimeout) {
+        this.refreshTimeout = refreshTimeout;
+      }
+    },
+
+    detached() {
+      this.cleanTimeFlag();
+    },
+  };
 
   onPageScroll(e: WechatMiniprogram.Component.TrivialInstance) {
     const { scrollTop } = e;
@@ -191,7 +193,7 @@ export default class PullDownRefresh extends SuperComponent {
     return v / this.pixelRatio;
   }
 
-  setRefreshBarHeight(barHeight: number): Promise<number> {
+  setRefreshBarHeight(barHeight: number) {
     const data: Record<string, any> = { barHeight };
     if (barHeight >= this.loadingBarHeight) {
       data.refreshStatus = 1;
