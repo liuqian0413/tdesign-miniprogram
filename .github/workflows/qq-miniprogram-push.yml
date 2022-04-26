@@ -6,7 +6,7 @@ on:
       - 'feat/qq-mini'
 
 jobs:
-  TAG_PUSH:
+  QQ_MINIPROGRAM_PUSH:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
